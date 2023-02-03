@@ -132,16 +132,16 @@ const userSchema = Schema({
   },
 });
 
-// userSchema.methods.generateAuthToken = async function () {
-//   try {
-//     const token = jwt.sign({ _id: this._id.toString() }, JWT_SECRET);
-//     this.tokens = this.tokens.concat({ token: token });
-//     await this.save();
-//     return token;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+userSchema.methods.generateAuthToken = async function () {
+  try {
+    const token = jwt.sign({ _id: this._id.toString() }, JWT_SECRET);
+    this.tokens = this.tokens.concat({ token: token });
+    await this.save();
+    return token;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

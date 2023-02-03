@@ -31,7 +31,7 @@ exports.addUser = async (req, res, next) => {
     user.address = address;
     user.reports = reports;
     user.createdAt = new Date();
-    // const authToken = await user.generateAuthToken();
+    const authToken = await user.generateAuthToken();
     await user.save();
     return res.status(200).json({
       status: "success",
@@ -118,11 +118,18 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   try {
     const { user_id } = req.body;
-    await User.deleteOne({ user_id: user_id });
-    return res.status(200).json({
-      status: "success",
-      message: "user deleted successfully",
-    });
+    if (user_id) {
+      await User.deleteOne({ user_id: user_id });
+      return res.status(200).json({
+        status: "success",
+        message: "user deleted successfully",
+      });
+    } else {
+      return res.status(400).json({
+        status: "failed",
+        message: "please provide user id",
+      });
+    }
   } catch (error) {
     return res.json({
       status: "failed",
