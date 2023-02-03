@@ -60,12 +60,13 @@ exports.updateSpecialisation = async (req, res, next) => {
     const specialisation = await Specialisation.findOne({
       specialisation_id: specialisation_id,
     });
+    console.log(specialisation);
     specialisation.name = name;
     specialisation.specialisation_id = specialisation_id;
-    await user.save();
+    await specialisation.save();
     return res.status(200).json({
       status: "success",
-      message: "user details updated successfully",
+      message: "specialisation details updated successfully",
     });
   } catch (error) {
     return res.json({
