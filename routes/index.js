@@ -1,6 +1,7 @@
 const express = require("express");
 const user = require("./user.routes");
 const specialisation = require("./specialisation.routes");
+const email = require("./email.routes");
 const router = express.Router();
 
 const defaultRoutes = [
@@ -11,6 +12,10 @@ const defaultRoutes = [
   {
     path: "/specialisation",
     route: specialisation,
+  },
+  {
+    path: "/email",
+    route: email,
   },
 ];
 
