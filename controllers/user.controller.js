@@ -136,3 +136,392 @@ exports.deleteUser = async (req, res, next) => {
     });
   }
 };
+
+exports.addReview = async (req, res, next) => {
+  try {
+    const { review_msg, reviewer, rating, reviewed_on, timestamp } = req.body;
+    const user = await User.findOne({ user_id: reviewed_on });
+    const review_id = makeId(7);
+    const reviewData = {
+      review_id: review_id,
+      review_msg: review_msg,
+      reviewer: reviewer,
+      rating: rating,
+      timestamp: timestamp,
+    };
+    if (!user?.reviews) {
+      user.reviews = [];
+      user.reviews.push(reviewData);
+      user.save();
+    } else {
+      user.reviews.push(reviewData);
+      user.save();
+    }
+    return res.status(200).json({
+      status: "success",
+      message: "review added successfully",
+    });
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.getReview = async (req, res, next) => {
+  try {
+    const user_id = req.params.userId;
+    const user = await User.findOne({ user_id: user_id });
+    const reviews = user?.reviews ? user.reviews : {};
+    return res.status(200).json({
+      status: "success",
+      message: "user reviews fetched successfully",
+      data: reviews,
+    });
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.updateReview = async (req, res, next) => {
+  try {
+    const { review_msg, reviewer, rating, reviewed_on, timestamp, review_id } =
+      req.body;
+    const user = await User.findOne({ user_id: reviewed_on });
+    const reviews = user?.reviews;
+    let toUpdate = -1;
+    if (reviews.length > 0) {
+      reviews.forEach((element, key) => {
+        console.log(element.review_id, review_id);
+        if (element.review_id === review_id) {
+          toUpdate = key;
+        }
+      });
+    }
+    console.log(toUpdate);
+    if (toUpdate > -1) {
+      const updatedData = {
+        review_id: review_id,
+        review_msg: review_msg,
+        reviewer: reviewer,
+        rating: rating,
+        timestamp: timestamp,
+      };
+      reviews[toUpdate] = updatedData;
+      user.reviews = reviews;
+      user.save();
+      return res.status(200).json({
+        status: "success",
+        message: "review updated successfully",
+      });
+    } else {
+      return res.status(400).json({
+        status: "failed",
+        message: "review not found",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.deleteReview = async (req, res, next) => {
+  try {
+    const { user_id, review_id } = req.body;
+    if (user_id) {
+      const user = await User.findOne({ user_id: user_id });
+      const reviews = user?.reviews;
+      let toDelete = -1;
+      if (reviews.length > 0) {
+        reviews.forEach((element, key) => {
+          if (element.review_id === review_id) {
+            toDelete = key;
+          }
+        });
+      }
+      if (toDelete > -1) {
+        reviews.splice(toDelete, 1);
+        user.reviews = reviews;
+        user.save();
+        return res.status(200).json({
+          status: "success",
+          message: "review deleted successfully",
+        });
+      } else {
+        return res.status(400).json({
+          status: "failed",
+          message: "review not found",
+        });
+      }
+    } else {
+      return res.status(400).json({
+        status: "failed",
+        message: "please provide user id",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.addReport = async (req, res, next) => {
+  try {
+    const { reporter, reported_on, timestamp } = req.body;
+    const user = await User.findOne({ user_id: reported_on });
+    const report_id = makeId(7);
+    const reportData = {
+      report_id: report_id,
+      reporter: reporter,
+      timestamp: timestamp,
+    };
+    if (!user?.reports) {
+      user.reports = [];
+      user.reports.push(reportData);
+      user.save();
+    } else {
+      user.reports.push(reportData);
+      user.save();
+    }
+    return res.status(200).json({
+      status: "success",
+      message: "report added successfully",
+    });
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.getReport = async (req, res, next) => {
+  try {
+    const user_id = req.params.userId;
+    const user = await User.findOne({ user_id: user_id });
+    const reports = user?.reports ? user.reports : {};
+    return res.status(200).json({
+      status: "success",
+      message: "user reports fetched successfully",
+      data: reports,
+    });
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.updateReport = async (req, res, next) => {
+  try {
+    const { reporter, reported_on, timestamp, report_id } = req.body;
+    const user = await User.findOne({ user_id: reported_on });
+    const reports = user?.reports;
+    let toUpdate = -1;
+    if (reports.length > 0) {
+      reports.forEach((element, key) => {
+        if (element.report_id === report_id) {
+          toUpdate = key;
+        }
+      });
+    }
+    if (toUpdate > -1) {
+      const updatedData = {
+        report_id: report_id,
+        reporter: reporter,
+        timestamp: timestamp,
+      };
+      reports[toUpdate] = updatedData;
+      user.reports = reports;
+      user.save();
+      return res.status(200).json({
+        status: "success",
+        message: "report updated successfully",
+      });
+    } else {
+      return res.status(400).json({
+        status: "failed",
+        message: "report not found",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.deleteReport = async (req, res, next) => {
+  try {
+    const { user_id, report_id } = req.body;
+    if (user_id) {
+      const user = await User.findOne({ user_id: user_id });
+      const reports = user?.reports;
+      let toDelete = -1;
+      if (reports.length > 0) {
+        reports.forEach((element, key) => {
+          if (element.report_id === report_id) {
+            toDelete = key;
+          }
+        });
+      }
+      if (toDelete > -1) {
+        reports.splice(toDelete, 1);
+        user.reports = reports;
+        user.save();
+        return res.status(200).json({
+          status: "success",
+          message: "report deleted successfully",
+        });
+      } else {
+        return res.status(400).json({
+          status: "failed",
+          message: "report not found",
+        });
+      }
+    } else {
+      return res.status(400).json({
+        status: "failed",
+        message: "please provide user id",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.addRating = async (req, res, next) => {
+  try {
+    const { reviewer, rating, reviewed_on, timestamp } = req.body;
+    const user = await User.findOne({ user_id: reviewed_on });
+    const review_id = makeId(7);
+    const reviewData = {
+      review_id: review_id,
+      reviewer: reviewer,
+      rating: rating,
+      timestamp: timestamp,
+    };
+    if (!user?.reviews) {
+      user.reviews = [];
+      user.reviews.push(reviewData);
+      user.save();
+    } else {
+      user.reviews.push(reviewData);
+      user.save();
+    }
+    return res.status(200).json({
+      status: "success",
+      message: "rating added successfully",
+    });
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.getRating = async (req, res, next) => {
+  try {
+    const user_id = req.params.userId;
+    const user = await User.findOne({ user_id: user_id });
+    const reviews = user?.reviews ? user.reviews : {};
+    return res.status(200).json({
+      status: "success",
+      message: "user ratings fetched successfully",
+      data: reviews,
+    });
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.updateRating = async (req, res, next) => {
+  try {
+    const { reviewer, rating, reviewed_on, timestamp, review_id } = req.body;
+    const user = await User.findOne({ user_id: reviewed_on });
+    const reviews = user?.reviews;
+    let toUpdate = -1;
+    if (reviews.length > 0) {
+      reviews.forEach((element, key) => {
+        console.log(element.review_id, review_id);
+        if (element.review_id === review_id) {
+          toUpdate = key;
+        }
+      });
+    }
+    console.log(toUpdate);
+    if (toUpdate > -1) {
+      const updatedData = {
+        review_id: review_id,
+        reviewer: reviewer,
+        rating: rating,
+        timestamp: timestamp,
+      };
+      reviews[toUpdate] = updatedData;
+      user.reviews = reviews;
+      user.save();
+      return res.status(200).json({
+        status: "success",
+        message: "rating updated successfully",
+      });
+    } else {
+      return res.status(400).json({
+        status: "failed",
+        message: "rating not found",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};
+
+exports.deleteRating = async (req, res, next) => {
+  try {
+    const { user_id, review_id } = req.body;
+    if (user_id) {
+      const user = await User.findOne({ user_id: user_id });
+      const reviews = user?.reviews;
+      let toDelete = -1;
+      if (reviews.length > 0) {
+        reviews.forEach((element, key) => {
+          if (element.review_id === review_id) {
+            toDelete = key;
+          }
+        });
+      }
+      if (toDelete > -1) {
+        reviews.splice(toDelete, 1);
+        user.reviews = reviews;
+        user.save();
+        return res.status(200).json({
+          status: "success",
+          message: "rating deleted successfully",
+        });
+      } else {
+        return res.status(400).json({
+          status: "failed",
+          message: "rating not found",
+        });
+      }
+    } else {
+      return res.status(400).json({
+        status: "failed",
+        message: "please provide user id",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      status: "failed",
+    });
+  }
+};

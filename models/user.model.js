@@ -109,15 +109,42 @@ const userSchema = Schema({
     required: true,
   },
   reports: {
-    type: Object,
-    default: {
-      from_user_id: {
-        type: String,
-      },
-      report: {
-        type: String,
-      },
-    },
+    type: Array,
+    default: [
+      // {
+      //   report_id: {
+      //     type: String,
+      //   },
+      //   reporter: {
+      //     type: String,
+      //   },
+      //   reported_on: {
+      //     type: String,
+      //   },
+      // },
+    ],
+  },
+  reviews: {
+    type: Array,
+    default: [
+      // {
+      //   review_id: {
+      //     type: String,
+      //   },
+      //   review_msg: {
+      //     type: String,
+      //   },
+      //   reviewer: {
+      //     type: String,
+      //   },
+      //   rating: {
+      //     type: String,
+      //   },
+      //   reviewed_on: {
+      //     type: String,
+      //   },
+      // },
+    ],
   },
   tokens: [
     {
